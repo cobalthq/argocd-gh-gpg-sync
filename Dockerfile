@@ -11,6 +11,6 @@ RUN go build -v -o /build/argocd-gh-gpg-sync ./...
 
 FROM alpine:3.14.2
 
-COPY --from=builder /build /
+COPY --from=builder /build /usr/local/bin
 
 ENTRYPOINT ["argocd-gh-gpg-sync"]
