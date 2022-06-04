@@ -9,7 +9,7 @@ add their keys in two places.
 
 ## Usage
 
-Deploy this application as a CronJob anywhere in your cluster. You can use the following manifest
+Deploy the `cobalthq/argocd-gh-gpg-sync` image as a CronJob anywhere in your cluster. You can use the following manifest
 as an example. Note that it depends on a secret for the GitHub token.
 
 ```
@@ -73,6 +73,7 @@ spec:
                       key: GITHUB_TOKEN
           restartPolicy: OnFailure
 ```
+
 ### Environment Variables
 | Variable              | Purpose                                                                      |
 |-----------------------|------------------------------------------------------------------------------|
