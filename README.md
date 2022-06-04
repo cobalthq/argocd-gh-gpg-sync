@@ -9,6 +9,70 @@ add their keys in two places.
 
 ## Usage
 
+Deploy this application as a CronJob anywhere in your cluster. You can use the following manifest
+as an example. Note that it depends on a secret for the GitHub token.
+
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-gh-gpg-sync
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-gh-gpg-sync
+subjects:
+- kind: ServiceAccount
+  name: argocd-gh-gpg-sync
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argocd-gh-gpg-sync
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-gh-gpg-sync
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - patch
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - appprojects
+    verbs:
+      - patch
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: argocd-gh-gpg-sync
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: argocd-gh-gpg-sync
+          containers:
+            - name: sync
+              image: cobaltlabs/argocd-gh-gpg-sync:latest
+              imagePullPolicy: Always
+              env:
+                - name: GITHUB_ORGANIZATION
+                  value: cobalthq
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: argocd-github-creds # You will need to provide this secret!
+                      key: GITHUB_TOKEN
+          restartPolicy: OnFailure
+```
 ### Environment Variables
 | Variable              | Purpose                                                                      |
 |-----------------------|------------------------------------------------------------------------------|
