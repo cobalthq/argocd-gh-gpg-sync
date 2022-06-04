@@ -64,7 +64,7 @@ spec:
           serviceAccountName: argocd-gh-gpg-sync
           containers:
             - name: sync
-              image: cobaltlabs/argocd-gh-gpg-sync:latest
+              image: cobaltlabs/argocd-gh-gpg-sync:v0.1.0
               imagePullPolicy: Always
               env:
                 - name: GITHUB_ORGANIZATION
