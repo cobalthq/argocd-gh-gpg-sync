@@ -12,7 +12,7 @@ add their keys in two places.
 
 ## Usage
 
-Deploy the `cobalthq/argocd-gh-gpg-sync` image as a CronJob anywhere in your cluster. You can use the following manifest
+Deploy the `cobaltlabs/argocd-gh-gpg-sync` image as a CronJob anywhere in your cluster. You can use the following manifest
 as an example. Note that it depends on a secret for the GitHub token.
 
 ```
