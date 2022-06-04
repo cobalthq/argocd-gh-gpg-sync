@@ -6,6 +6,7 @@ executors:
       IMAGE_TAG: cobaltlabs/argocd-gh-gpg-sync:latest
     docker:
       - image: cimg/base:2022.04
+    working_directory: /mnt/ramdisk
 
 jobs:
   build:
@@ -29,15 +30,33 @@ jobs:
     steps:
       - setup_remote_docker
       - attach_workspace:
-          at: /tmp/workspace
+          at: /mnt/ramdisk/workspace
       - run:
           name: Load Docker image
-          command: docker load --input /tmp/workspace/image.tar
+          command: docker load --input /mnt/ramdisk/workspace/image.tar
       - run:
           name: Publish Docker image
           command: |
             echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             docker push "${IMAGE_TAG}"
+
+  publish-tag:
+    executor: docker-publisher
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /mnt/ramdisk/workspace
+      - run:
+          name: Load Docker image
+          command: docker load --input /mnt/ramdisk/workspace/image.tar
+      - run:
+          name: Publish Docker image
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            IMAGE_TAG=${CIRCLE_TAG/v/''}
+            docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+            docker push $IMAGE_NAME:latest
+            docker push $IMAGE_NAME:$IMAGE_TAG
 
 workflows:
   version: 2
@@ -50,3 +69,19 @@ workflows:
           filters:
             branches:
               only: main
+  build-tags:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish-tag:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

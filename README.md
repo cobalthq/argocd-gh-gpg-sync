@@ -1,5 +1,8 @@
 # argocd-gh-gpg-sync
 
+[![cobalthq](https://circleci.com/gh/cobalthq/argocd-gh-gpg-sync/tree/main.svg?style=svg)](https://circleci.com/gh/cobalthq/argocd-gh-gpg-sync/?branch=main)
+[![DockerHub](https://img.shields.io/docker/pulls/cobaltlabs/argocd-gh-gpg-sync)](https://hub.docker.com/r/cobaltlabs/argocd-gh-gpg-sync)
+
 This simple application runs as a CronJob inside your ArgoCD-enabled Kubernetes cluster
 to synchronize all GPG keys from your GitHub organization into ArgoCD. It will add the
 GPG keys to ArgoCD as well as set them as signature keys on a project.
